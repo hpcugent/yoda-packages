@@ -1,0 +1,5 @@
+{
+    "license": "iRODS License (BSD)",
+    "description": "PHP API for iRODS",
+    "ARGS": "src/=/var/www/yoda/{name}"
+}

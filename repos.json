@@ -1,0 +1,7 @@
+{
+    "irods-php": {
+        "fork": "stdweird",
+        "branch": "maas42",
+        "version": "0.0.1"
+    }
+}
