@@ -1,0 +1,10 @@
+{
+    "license": "GPLv3",
+    "description": "A modular web platform for interfaces to Yoda",
+    "depends": [
+        "CodeIgniter == {version}",
+        "irods-php == {irods_php_version}"
+    ],
+    "directories": "/var/www/yoda/{name}",
+    "ARGS": ".=/var/www/yoda/{name}"
+}

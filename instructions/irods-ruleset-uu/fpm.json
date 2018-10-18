@@ -1,7 +1,7 @@
 {
     "license": "GPLv3",
     "description": "all rules and policies to be configured with all Yoda iRODS environments",
-    "exclude": ["*/.git*", "*/tests/*", "*/tests"],
+    "exclude": ["*/tests/*", "*/tests"],
     "user": "irods",
     "group": "irods",
     "depends": [

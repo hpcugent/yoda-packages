@@ -2,5 +2,6 @@
     "license": "iRODS License (BSD)",
     "description": "PHP API for iRODS",
     "directories": "/var/www/yoda/{name}",
+    "version": "{irods_php_version}",
     "ARGS": "src/=/var/www/yoda/{name}"
 }

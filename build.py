@@ -29,6 +29,7 @@ fpm.json format
         name (default name from repos.json)
         input-type (default dir)
         user / group: replaced by eg rpm-user / rpm-group
+        exclude (some defaults are always added: e.g. '*/.git*')
         ARGS: passed as arg(s) to fpm
 
 before/after - install/remove/upgrade scripts
@@ -55,6 +56,15 @@ DEFAULT_PKG = 'rpm'
 FPM = 'fpm'
 ARGS_KW = 'ARGS'
 DEFAULT_INPUT_TYPE = 'dir'
+EXCLUDE_DEFAULT = ['*/.git*']
+
+
+def load_json(fn):
+    with open(fn, 'r') as f:
+        try:
+            return json.load(f)
+        except Exception as e:
+            raise type(e)("Failed to load json {}: {}".format(fn, e))
 
 
 def prep_repo(repo_d, wipe=False):
@@ -133,11 +143,10 @@ def gather_instructions(name, repo, version=None):
     if not os.path.isfile(fpm_json):
         raise Exception("No FPM instructions {} found".format(fpm_json))
 
-    with open(fpm_json, 'r') as f:
-        fpm = json.load(f)
-        for k in fpm.keys():
-            if len(k) == 1:
-                raise Exception("Found single letter %s (i.e. short option)" % k)
+    fpm = load_json(fpm_json)
+    for k in fpm.keys():
+        if len(k) == 1:
+            raise Exception("Found single letter %s (i.e. short option)" % k)
 
     # check for before/after install/remove/upgrade scripts
     for op in ['install', 'remove', 'upgrade']:
@@ -156,6 +165,15 @@ def gather_instructions(name, repo, version=None):
     fpm.setdefault('name', name)
     fpm.setdefault('architecture', DEFAULT_ARCH)
     fpm.setdefault('input-type', DEFAULT_INPUT_TYPE)
+
+    # insert default excludes
+    excl = fpm.get('exclude', [])
+    if not isinstance(excl, (list, tuple)):
+        excl = [excl]
+    for def_excl in EXCLUDE_DEFAULT:
+        if def_excl not in excl:
+            excl.append(def_excl)
+    fpm['exclude'] = excl
 
     got_version = fpm.setdefault('version', version)
     if got_version is None:
@@ -242,25 +260,24 @@ def parse_repos():
     """
     Parse the repos.json
     """
-    with open(REPOS_JSON, 'r') as f:
-        repos = json.load(f)
-        res = []
-        default = repos.pop(REPOS_DEFAULT_KW, {})
+    repos = load_json(REPOS_JSON)
+    res = []
+    default = repos.pop(REPOS_DEFAULT_KW, {})
 
-        for k in sorted(repos.keys()):
-            v = copy.deepcopy(default)
+    for k in sorted(repos.keys()):
+        v = copy.deepcopy(default)
 
-            # update the templates dict
-            tpls = v.pop('templates', {})
-            tpls.update(repos[k].pop('templates', {}))
+        # update the templates dict
+        tpls = v.pop('templates', {})
+        tpls.update(repos[k].pop('templates', {}))
 
-            v.update(repos[k])
-            v['name'] = k
-            v['templates'] = tpls
+        v.update(repos[k])
+        v['name'] = k
+        v['templates'] = tpls
 
-            res.append(v)
-        logging.debug("Got repos %s from %s", res, REPOS_JSON)
-        return res
+        res.append(v)
+    logging.debug("Got repos %s from %s", res, REPOS_JSON)
+    return res
 
 def main():
     repos = parse_repos()

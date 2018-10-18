@@ -5,14 +5,21 @@
         "ref_is_version": true,
         "templates": {
             "irods_version": "4.2.4",
-            "irods_version_next": "4.2.5"
+            "irods_version_next": "4.2.5",
+            "irods_php_version": "0.0.1"
         }
     },
     "irods-php": {
         "fork": "stdweird",
-        "ref": "maas42",
-        "version": "0.0.1"
+        "ref": "maas42"
     },
     "irods-ruleset-uu": {},
-    "irods-ruleset-research": {}
+    "irods-ruleset-research": {},
+    "irods-ruleset-i-lab": {},
+    "yoda-portal-group-manager": {"templates": {"module": "group-manager"}},
+    "yoda-portal-research": {"templates": {"module": "research"}},
+    "yoda-portal-statistics": {"templates": {"module": "statistics"}},
+    "yoda-portal-intake": {"templates": {"module": "intake"}},
+    "CodeIgniter": {},
+    "yoda-portal": {}
 }

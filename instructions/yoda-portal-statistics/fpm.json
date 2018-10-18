@@ -1,0 +1,7 @@
+{
+    "license": "GPLv3",
+    "description": "Statistics module for the Yoda platform",
+    "depends": "yoda-portal == {version}",
+    "directories": "/var/www/yoda/yoda-portal/modules/{module}",
+    "ARGS": ".=/var/www/yoda/yoda-portal/modules/{module}"
+}
