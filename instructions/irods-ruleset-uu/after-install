@@ -1,0 +1,6 @@
+#!/bin/sh
+if [ ! -f /etc/irods/core.py.template ]; then
+    echo "ERROR: missing core.py.template"
+    exit 1
+fi
+su - irods -c 'cd /etc/irods/<%= name %>; make install'

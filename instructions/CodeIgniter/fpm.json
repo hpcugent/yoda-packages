@@ -1,0 +1,6 @@
+{
+    "license": "MIT",
+    "description": "CodeIgniter is an Application Development Framework for people who build web sites using PHP",
+    "directories": "/var/www/yoda/{name}",
+    "ARGS": ".=/var/www/yoda/{name}"
+}
