@@ -4,11 +4,14 @@
 Package YoDa related repos using fpm
 
 repos.jon format
+    DEFAULT
+        for default values
     name
         fork
-        branch
-        branch_is_version (optinal, default version from branch_is_version, overridden by fpm.json)
-        version (optional, default)
+        ref: git refernce name (from tag or branch (tried in that order))
+        ref_is_version (optional, leading 'v' is removed when present)
+        version (optional, default based on ref_is_version; overridden by fpm.json)
+        templates (optional, templates for fpm command values) # TODO: not yet for scripts
 
 fpm.json format
     no single letter keys
@@ -25,9 +28,14 @@ fpm.json format
         url (default url from repo)
         name (default name from repos.json)
         input-type (default dir)
+        user / group: replaced by eg rpm-user / rpm-group
         ARGS: passed as arg(s) to fpm
+
+before/after - install/remove/upgrade scripts
+    are templated (e.g. <%= name %> is available)
 """
 
+import copy
 from git import Repo
 import logging
 import os
@@ -39,6 +47,7 @@ GITHUB_GIT = "https://github.com/{fork}/{name}"
 PKG_AREA = '/tmp/yoda-packages'  # to clone epos etc
 PKG_SUBDIR = 'packages'  # subdir of PKG_AREA to agtehr all packages
 REPOS_JSON = 'repos.json'
+REPOS_DEFAULT_KW = 'DEFAULT'
 FPM_JSON = 'fpm.json'
 CWD = os.getcwd()
 DEFAULT_ARCH = 'noarch'
@@ -67,13 +76,34 @@ def prep_repo(repo_d, wipe=False):
         repo = Repo.clone_from(url, repo_path)
         logging.debug("Cloned repo %s url %s in %s", repo, url, repo_path)
 
-    branch = getattr(repo.remotes.origin.refs, repo_d['branch'])
+    ref_version = None
+    # tag before branch
+    if 'ref' in repo_d:
+        ref_name = repo_d['ref']
 
-    repo.head.reference = branch
+        for ref_type in ['tag', 'branch']:
+            if ref_type == 'branch':
+                full_name = "origin/" + ref_name
+            else:
+                full_name = ref_name
+
+            candidates = [r for r in repo.refs if r.name == full_name]
+            if candidates:
+                ref = candidates[0]
+                if repo_d.get('ref_is_version', False):
+                    ref_version = ref_name
+                    if ref_version.startswith('v'):
+                        ref_version = ref_version[1:]
+                break
+            else:
+                logging.debug("No %s named %s found", ref_type, ref_name)
+
+    repo.head.reference = ref
     repo.head.reset(index=True, working_tree=True)
-    logging.debug("Switched to branch name %s (%s)", repo_d['branch'], branch)
+    logging.debug("Switched to %s name %s (%s; ref_version %s)", ref_type, ref_name, ref, ref_version)
 
-    return repo
+    version = repo_d.get('version', ref_version)
+    return repo, version
 
 
 def gather_instructions(name, repo, version=None):
@@ -113,7 +143,7 @@ def gather_instructions(name, repo, version=None):
     for op in ['install', 'remove', 'upgrade']:
         for when in ['before', 'after']:
             opname = '{}-{}'.format(when, op)
-            script = os.path.join(inst, )
+            script = os.path.join(inst, opname)
             if os.path.isfile(script):
                 logging.debug("Found %s script %s", opname, script)
                 fpm[opname] = script
@@ -135,20 +165,32 @@ def gather_instructions(name, repo, version=None):
     return fpm
 
 
-def run_fpm(fpm):
+def run_fpm(fpm, template_data):
     """
     Actually run fpm
     """
+    template_data.update(fpm)
 
     pkgdir = os.path.join(PKG_AREA, PKG_SUBDIR)
-    os.makedirs(pkgdir)
+    if not os.path.exists(pkgdir):
+        os.makedirs(pkgdir)
 
     cmds = [
         FPM,
         '--force',
+        '--verbose',
+        '--template-scripts',
         '--output-type', DEFAULT_PKG,
         '--package', pkgdir,
     ]
+
+
+    # replace generic user/group
+    for k in ['user', 'group']:
+        if k in fpm:
+            v = fpm.pop(k)
+            fpm["{}-{}".format(DEFAULT_PKG, k)] = v
+
     args = []
     for orig_k, origs in fpm.items():
         k = "--" + orig_k
@@ -159,7 +201,7 @@ def run_fpm(fpm):
                 if orig_v:
                     cmds.append(k)
             else:
-                v = orig_v.format(**fpm)
+                v = orig_v.format(**template_data)
                 if orig_k == ARGS_KW:
                     args.append(v)
                 else:
@@ -185,19 +227,12 @@ def make_package(repo_d):
     """
     name = repo_d['name']
     logging.debug("Start make_packge for repo %s (%s)", name, repo_d)
-    repo = prep_repo(repo_d)
+    repo, rversion = prep_repo(repo_d)
 
-    if repo_d.get('branch_is_version', False):
-        logging.info("branch_is_version")
-        bversion = repo_d['branch']
-        logging.debug("branch_is_version sets default version to %s", bversion)
-    else:
-        bversion = None
-    version = repo_d.get('version', bversion)
-    fpm = gather_instructions(name, repo, version=version)
+    fpm = gather_instructions(name, repo, version=rversion)
 
     os.chdir(repo.working_dir)
-    pkgs = run_fpm(fpm)
+    pkgs = run_fpm(fpm, repo_d.get('templates', {}))
 
     # just be bice
     os.chdir(CWD)
@@ -210,9 +245,19 @@ def parse_repos():
     with open(REPOS_JSON, 'r') as f:
         repos = json.load(f)
         res = []
+        default = repos.pop(REPOS_DEFAULT_KW, {})
+
         for k in sorted(repos.keys()):
-            v = repos[k]
+            v = copy.deepcopy(default)
+
+            # update the templates dict
+            tpls = v.pop('templates', {})
+            tpls.update(repos[k].pop('templates', {}))
+
+            v.update(repos[k])
             v['name'] = k
+            v['templates'] = tpls
+
             res.append(v)
         logging.debug("Got repos %s from %s", res, REPOS_JSON)
         return res

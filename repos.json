@@ -1,7 +1,18 @@
 {
+    "DEFAULT" : {
+        "fork": "UtrechtUniversity",
+        "ref": "v1.3.1",
+        "ref_is_version": true,
+        "templates": {
+            "irods_version": "4.2.4",
+            "irods_version_next": "4.2.5"
+        }
+    },
     "irods-php": {
         "fork": "stdweird",
-        "branch": "maas42",
+        "ref": "maas42",
         "version": "0.0.1"
-    }
+    },
+    "irods-ruleset-uu": {},
+    "irods-ruleset-research": {}
 }
