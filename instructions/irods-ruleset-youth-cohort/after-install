@@ -1,0 +1,2 @@
+#!/bin/sh
+su - irods -c 'cd /etc/irods/<%= name %>; make install'

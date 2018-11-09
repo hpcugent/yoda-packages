@@ -16,6 +16,7 @@
     "irods-ruleset-uu": {},
     "irods-ruleset-research": {},
     "irods-ruleset-i-lab": {},
+    "irods-ruleset-youth-cohort": {},
     "yoda-portal-group-manager": {"templates": {"module": "group-manager"}},
     "yoda-portal-research": {"templates": {"module": "research"}},
     "yoda-portal-statistics": {"templates": {"module": "statistics"}},

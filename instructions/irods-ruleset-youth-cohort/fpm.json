@@ -1,0 +1,10 @@
+{
+    "license": "GPLv3",
+    "description": "Subset of rules and policies for iRODS based YoDa required for the YoDa intake module",
+    "exclude": ["*/.git*", "*/tests/*"],
+    "user": "irods",
+    "group": "irods",
+    "depends": "irods-ruleset-uu == {version}",
+    "directories": "/etc/irods/{name}",
+    "ARGS": ".=/etc/irods/{name}"
+}
