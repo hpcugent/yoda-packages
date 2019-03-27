@@ -1,11 +1,11 @@
 {
     "DEFAULT" : {
         "fork": "UtrechtUniversity",
-        "ref": "v1.3.1",
+        "ref": "v1.4.0",
         "ref_is_version": true,
         "templates": {
-            "irods_version": "4.2.4",
-            "irods_version_next": "4.2.5",
+            "irods_version": "4.2.5",
+            "irods_version_next": "4.2.6",
             "irods_php_version": "0.0.1"
         }
     },
@@ -22,5 +22,10 @@
     "yoda-portal-statistics": {"templates": {"module": "statistics"}},
     "yoda-portal-intake": {"templates": {"module": "intake"}},
     "CodeIgniter": {},
-    "yoda-portal": {}
+    "yoda-portal": {
+        "fork": "kwaegema",
+        "ref": "prodsfix",
+        "ref_is_version": false,
+        "version": "1.4.0"
+    }
 }

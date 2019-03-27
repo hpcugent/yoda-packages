@@ -7,7 +7,8 @@
     "depends": [
         "irods-server == {irods_version}",
         "irods-uu-microservices >= {irods_version}", "irods-uu-microservices < {irods_version_next}",
-        "irods-sudo-microservices >= {irods_version}", "irods-sudo-microservices < {irods_version_next}"
+        "irods-sudo-microservices >= {irods_version}", "irods-sudo-microservices < {irods_version_next}",
+        "irods-rule-engine-plugin-python >= {irods_version}", "irods-rule-engine-plugin-python < {irods_version_next}"
     ],
     "directories": "/etc/irods/{name}",
     "ARGS": ".=/etc/irods/{name}"
