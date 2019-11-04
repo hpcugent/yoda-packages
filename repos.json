@@ -1,31 +1,34 @@
 {
     "DEFAULT" : {
         "fork": "UtrechtUniversity",
-        "ref": "v1.4.0",
+        "ref": "v1.5.1",
         "ref_is_version": true,
         "templates": {
-            "irods_version": "4.2.5",
-            "irods_version_next": "4.2.6",
-            "irods_php_version": "0.0.1"
+            "irods_version": "4.2.6",
+            "irods_version_next": "4.2.7",
+            "irods_php_version": "1.5.1"
         }
     },
-    "irods-php": {
-        "fork": "stdweird",
-        "ref": "maas42"
-    },
+    "irods-php": {},
     "irods-ruleset-uu": {},
     "irods-ruleset-research": {},
-    "irods-ruleset-i-lab": {},
+    "irods-ruleset-datarequest": {
+        "ref": "development",
+        "ref_is_version": false,
+        "version": "1.5.1"
+    },
     "irods-ruleset-youth-cohort": {},
     "yoda-portal-group-manager": {"templates": {"module": "group-manager"}},
     "yoda-portal-research": {"templates": {"module": "research"}},
+    "yoda-portal-vault": {"templates": {"module": "vault"}},
     "yoda-portal-statistics": {"templates": {"module": "statistics"}},
     "yoda-portal-intake": {"templates": {"module": "intake"}},
-    "CodeIgniter": {},
-    "yoda-portal": {
-        "fork": "kwaegema",
-        "ref": "prodsfix",
+    "yoda-portal-datarequest": {
+        "templates": {"module": "datarequest"},
+        "ref": "development",
         "ref_is_version": false,
-        "version": "1.4.0"
-    }
+        "version": "1.5.1"
+    },
+    "CodeIgniter": {},
+    "yoda-portal": {}
 }
