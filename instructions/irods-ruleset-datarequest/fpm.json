@@ -1,0 +1,9 @@
+{
+    "license": "GPLv3",
+    "description": "Subset of rules and policies for iRODS based YoDa required for the YoDa datarequest module",
+    "exclude": ["*/.git*", "*/tests/*"],
+    "user": "irods",
+    "group": "irods",
+    "directories": "/etc/irods/{name}",
+    "ARGS": ".=/etc/irods/{name}"
+}

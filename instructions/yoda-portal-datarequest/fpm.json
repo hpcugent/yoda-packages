@@ -1,0 +1,6 @@
+{
+    "license": "GPLv3",
+    "description": "Datarequest module for the Yoda platform",
+    "directories": "/var/www/yoda/yoda-portal/modules/{module}",
+    "ARGS": ".=/var/www/yoda/yoda-portal/modules/{module}"
+}
